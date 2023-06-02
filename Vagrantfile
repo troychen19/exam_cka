@@ -65,10 +65,10 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 sudo mv /etc/containerd/config.toml /etc/containerd/config.toml.bak
 containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
-sudo set -i 's/SystemdCgroup \=false/SystemCgroup \=true/g' /etc/containerd/config.toml
+sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
 
 sudo systemctl enable containerd
-sudo systemctl daemon-reload && systemctl restart containerd
+sudo systemctl daemon-reload && sudo systemctl restart containerd
 
 SCRIPT
 
