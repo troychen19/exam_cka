@@ -61,6 +61,7 @@ echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt
 # install k8s
 sudo apt-get update
 sudo apt install -y kubelet=1.26.5-00 kubeadm=1.26.5-00 kubectl=1.26.5-00
+# disable hold k8s version
 sudo apt-mark hold kubelet kubeadm kubectl
 
 sudo mv /etc/containerd/config.toml /etc/containerd/config.toml.bak
