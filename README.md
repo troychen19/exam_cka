@@ -6,7 +6,7 @@
 
 ## 1.2 初始化並加入 worker node
 ```shell
-sudo kubeadm init --control-plan-endpoint="master"
+sudo kubeadm init --control-plane-endpoint="master"
 ```
 init 參數說明
 
@@ -22,6 +22,33 @@ curl https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/ca
 kubectl apply -f ./calico.yaml
 ```
 
-# 2. 容器模擬題
+# 2. 考試相關說明
+
+考試中可查閱的文件
+* https://kubernetes.io/docs/concepts/
+* https://kubernetes.io/docs/tasks/
+* https://kubernetes.io/docs/reference/
+
+# 2.1 考生手冊
+https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad
+
+# 2.2 相關考試心得
+
+* [CKA 考試全攻略流程](https://medium.com/@app0/cka-%E8%80%83%E8%A9%A6%E5%85%A8%E6%94%BB%E7%95%A5%E6%B5%81%E7%A8%8B-3a28d1b73eea)
+* [CKA認證考試就看這一篇](https://blog.csdn.net/mianbaojiayou/article/details/122449874)
+* [手把手帶你過CNCF CKA考試 (第一章)](./handTohandCKA_first.md)
+* [20221214 CKA (Certified Kubernetes Administrator) 考試心得](https://ithelp.ithome.com.tw/articles/10310401)
+
+# 3. 教學課程
+
+* [Certified Kubernetes Administrator (CKA) 考试完全指南（2022版）](https://www.udemy.com/course/k8s-chinese/)
+* [Certified Kubernetes Administrator (CKA) with Practice Tests](https://www.udemy.com/course/certified-kubernetes-administrator-with-practice-tests/)
+
+購買課程
+[Certified Kubernetes Administrator (CKA) with Practice Tests](https://www.udemy.com/cart/success/927770078/)
+
+
+# 4. [容器模擬題](./container_test.md)
+# 5. [cluster安裝與配置](./cluster_deployAndConfig.md)
 
 
