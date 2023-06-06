@@ -8,7 +8,7 @@ EOF
 
 ## stop swap
 sudo swapoff -a
-sudo sed -i '/swap/ s/^\(.*\)$/#\1/g' /etc/fstab
+sudo sed -i '/swap.img/ s/^\(.*\)$/#\1/g' /etc/fstab
 
 ## enable netfilter
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
@@ -62,7 +62,7 @@ echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt
 sudo apt-get update
 sudo apt install -y kubelet=1.26.5-00 kubeadm=1.26.5-00 kubectl=1.26.5-00
 # disable hold k8s versionva
-sudo apt-mark hold kubelet kubeadm kubectl
+# sudo apt-mark hold kubelet kubeadm kubectl
 
 sudo mv /etc/containerd/config.toml /etc/containerd/config.toml.bak
 containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
