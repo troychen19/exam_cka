@@ -1,21 +1,35 @@
 # -*- mode: ruby -*-
 $script = <<-SCRIPT
+
+# remove old
+sudo apt-get remove docker docker-engine docker.io containerd runc
+
+# upgrade
+sudo apt-get update
+sudo apt-get -y upgrade
+
+# set host
 cat >> /etc/hosts <<EOF
-192.168.56.101 master
-192.168.56.102 node01
-192.168.56.103 node02
+192.168.153.101 master
+192.168.153.102 node01
+192.168.153.103 node02
 EOF
 
-## stop swap
-sudo swapoff -a
-sudo sed -i '/swap.img/ s/^\(.*\)$/#\1/g' /etc/fstab
+# disable 127.0.2.1 host
+sudo sed -i '/127.0.2.1/d' /etc/hosts
 
-## enable netfilter
+# stop swap
+sed -i '/swap/d' /etc/fstab
+sudo swapoff -a
+
+# disabel ufw
+systemctl disable --now ufw >/dev/null 2>&1
+
+# enable netfilter
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
-br_netfilter
+br_netfilterexit
 EOF
-
 sudo modprobe overlay
 sudo modprobe br_netfilter
 
@@ -28,12 +42,6 @@ EOF
 
 sudo sysctl --system
 
-# remove old
-sudo apt-get remove docker docker-engine docker.io containerd runc
-
-# upgrade
-sudo apt-get update
-sudo apt-get -y upgrade
 
 # install basic
 sudo apt-get -y install ca-certificates curl gnupg lsb-release
@@ -78,47 +86,50 @@ Vagrant.configure("2") do |config|
 
 
    config.vm.define "master" do |master|
-	master.vm.box = "ubuntu-20.04LTS"
+	master.vm.box = "bento/ubuntu-20.04"
+	master.vm.host_name="master"
 	master.vm.box_check_update = false
 	master.vbguest.auto_update = false
-	master.vm.provider "virtualbox" do |vb|
+	master.vm.provider "vmware_desktop" do |vb|
 		vb.gui = false
-		vb.name = "master"
-		vb.memory = 2048
-		vb.cpus = 2
+		vb.vmx["displayName"]="master"
+		vb.vmx["numvcpus"]="2"
+		vb.vmx["memsize"]="2048"
 	end
 
-	master.vm.network "private_network", ip: "192.168.56.101"
+	master.vm.network :private_network, ip: "192.168.153.101"
 	master.vm.provision "shell", inline: $script
   end
   
   config.vm.define "node01" do |node01|
-	node01.vm.box = "ubuntu-20.04LTS"
+	node01.vm.box = "bento/ubuntu-20.04"
+	node01.vm.host_name="node01"
 	node01.vm.box_check_update = false
 	node01.vbguest.auto_update = false
-	node01.vm.provider "virtualbox" do |vb|
+	node01.vm.provider "vmware_desktop" do |vb|
 		vb.gui = false
-		vb.name = "node01"
-		vb.memory = "2048"
-		vb.cpus = 2
+		vb.vmx["displayName"]="node01"
+		vb.vmx["numvcpus"]="2"
+		vb.vmx["memsize"]="2048"
 	end
 	
-	node01.vm.network "private_network", ip: "192.168.56.102"
+	node01.vm.network :private_network, ip: "192.168.153.102"
 	node01.vm.provision "shell", inline: $script
   end
   
   config.vm.define "node02" do |node02|
-	node02.vm.box = "ubuntu-20.04LTS"
+	node02.vm.box = "bento/ubuntu-20.04"
+	node02.vm.host_name="node02"
 	node02.vm.box_check_update = false
 	node02.vbguest.auto_update = false
-	node02.vm.provider "virtualbox" do |vb|
+	node02.vm.provider "vmware_desktop" do |vb|
 		vb.gui = false
-		vb.name = "node02"
-		vb.memory = "2048"
-		vb.cpus = 2
+		vb.vmx["displayName"]="node02"
+		vb.vmx["numvcpus"]="2"
+		vb.vmx["memsize"]="2048"
 	end
 	
-	node02.vm.network "private_network", ip: "192.168.56.103"
+	node02.vm.network :private_network, ip: "192.168.153.103"
 	node02.vm.provision "shell", inline: $script
   end
 
