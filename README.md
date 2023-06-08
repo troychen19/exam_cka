@@ -11,7 +11,7 @@ sudo kubeadm init --control-plane-endpoint="master"
 
 查看 container 的指令
 ```shell
-sudo ctr -a /run/containerd/containerd.sock images ls
+sudo crictl -r unix:///run/containerd/containerd.sock images ls
 ```
 
 
@@ -61,6 +61,7 @@ https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad
 * [CKA Exercises](https://github.com/chadmcrowell/CKA-Exercises/blob/main/README.md)
 * [CKA preparation](https://github.com/alijahnas/CKA-practice-exercises/tree/CKA-v1.23)
 * [Kubernetes Certified Administration](https://github.com/walidshaari/Kubernetes-Certified-Administrator)
+* [Certified Kubernetes Administrator (CKA) Course](https://github.com/kodekloudhub/certified-kubernetes-administrator-course)
 
 # 3. 教學課程
 

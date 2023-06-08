@@ -1,3 +1,16 @@
+# containerd
+
+contaienrd 控制指令使用 `crictl`，在不同的 container 都可用 crictl 來控制。
+crictl 的設定 /etc/crictl.yaml
+```yaml
+runtime-endpoint: unix:///var/run/containerd/containerd.sock
+image-endpoint: unix:///var/run/containerd/containerd.sock
+timeout: 2
+debug: true
+pull-image-on-create: false
+```
+
+
 # 一、 容器基礎
 1. 在 vms100 上查看當前系統裏有多少鏡像
 2. 在 vms100 上對 nginx:latest 做標籤，名字為 192.168.26.100/nginx:v1，並導出此鏡像為一個文件 niginx.tar
@@ -28,3 +41,6 @@
     4. 此容器的端口 5000 映射到物理機 (vms101) 的端口 5000 上
     5. 重啟策略設置為 always
 4. 在 vms100 和 vms101 上適當修改配置，使得在 vms100 上不管是從 vms101 拉取鏡像，還是往 vms101 上推送鏡像，都以 http 的方式，而不是 https 的方式
+
+
+
