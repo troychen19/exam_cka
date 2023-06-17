@@ -56,10 +56,20 @@ echo \
 
 # install docker
 sudo apt-get update
-sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-sudo systemctl enable docker.service
-sudo systemctl restart docker.service
-  
+sudo apt-get -y install  containerd.io 
+#docker-ce docker-ce-cli docker-buildx-plugin docker-compose-plugin
+#sudo systemctl enable docker.service
+#sudo systemctl restart docker.service
+
+# config crictl
+cat <<EOF | sudo tee /etc/crictl.yaml
+runtime-endpoint: unix:///var/run/containerd/containerd.sock
+image-endpoint: unix:///var/run/containerd/containerd.sock
+timeout: 2
+debug: false
+pull-image-on-create: false
+EOF
+
 # add k8s repository
 sudo apt install curl apt-transport-https -y
 curl -fsSL  https://packages.cloud.google.com/apt/doc/apt-key.gpg|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/k8s.gpg
