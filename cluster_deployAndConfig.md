@@ -32,9 +32,9 @@
 
 ---
 
-# 一 部署 cluster
+# 一 安裝部署 cluster
 
-1. 安裝 master
+## 1. 安裝 master
 ```shell
 kubeadm init --kubernetes-version=v1.26.5
 ```
@@ -44,14 +44,14 @@ kubeadm init --kubernetes-version=v1.26.5
  * --pod-network-cidr： pod 使用的網段
  * --control-plane-endpoint：如果打算建立HA(High Availability)集群，則需要設定這個，可以輸入Load balancer的DNS名稱或是IP，HA的部分會在未來說明。
 
-2. 配置 worker
+## 2. 配置 worker
 
 用初始化產生的 token 與指令加入 worker
 ```bash
 kubeadm join 192.168.153.102 --token <token value>
 ```
 
-3. 安裝 calico
+## 3. 安裝 calico
 * get yaml
 ```
 curl https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml -O
@@ -61,7 +61,7 @@ curl https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/ca
 kubectl apply -f ./calico.yaml
 ```
 
-4. 刪除節點及重新加入
+## 4. 刪除節點及重新加入
 
 **移除 node02**
 - 將 node02 設成維護模式
@@ -83,18 +83,30 @@ kubectl apply -f ./calico.yaml
    ```
 **加入 node3**
 - 檢查目前的 token (超過 24H 要重新產生)
-```bash
-kubeadm token list
-```
+   ```bash
+   kubeadm token list
+   ```
 - 重新產生 token
-```bash
-kubeadm token create --print-join-command
-```
+  ```bash
+   kubeadm token create --print-join-command
+  ```
 - 複製上述指令產生的 join 指令加入 node2
 
+# 常見命令
 
-5. 常見命令
-6. metric-server 監控 pod 與節點負載
-7. 命名空間 namespace
+# metric-server 監控 pod 與節點負載
+使用 `metrics-server-amd64`，下載位置： [metrics-servcer](https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml)
+
+- 安裝 metric-server
+在 github 的專案 [Kubernetes Metrics Server](https://github.com/kubernetes-sigs/metrics-server)
+```bash
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+```
+- 修改 CA
+
+- 使用方式 
+
+
+# 命名空間 namespace
 
 # 升級 kubernetes
