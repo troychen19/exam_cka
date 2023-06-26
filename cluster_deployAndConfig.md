@@ -35,13 +35,18 @@
 # 一 安裝部署 cluster
 
 ## 1. 安裝 master
-```shell
-kubeadm init --kubernetes-version=v1.26.5
+```bash
+kubeadm init --kubernetes-version=v1.26.5 \
+--upload-certs \
+--control-plane-endpoint master:6443 \
+--pod-network-cidr=10.244.0.0/16
+
 ```
 參數：
  * --image-repository： container image 倉庫位置
  * --kubernetes-version： k8s 安裝版本
- * --pod-network-cidr： pod 使用的網段
+ * --pod-network-cidr： pod 使用的網段， ex: --pod-network-cidr=10.210.0.0/16
+ * --service-cidr:  service 使用網段，ex: --svc-network-cidr=10.215.0.0/16
  * --control-plane-endpoint：如果打算建立HA(High Availability)集群，則需要設定這個，可以輸入Load balancer的DNS名稱或是IP，HA的部分會在未來說明。
 
 ## 2. 配置 worker
@@ -51,11 +56,18 @@ kubeadm init --kubernetes-version=v1.26.5
 kubeadm join 192.168.153.102 --token <token value>
 ```
 
-## 3. 安裝 calico
+## 3. 安裝 pod network
+
 * get yaml
+**Calico**
+```bash
+curl -O -L https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
 ```
-curl https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml -O
+**flannel**
+```bash
+curl -O -L https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 ```
+
 * apply
 ```
 kubectl apply -f ./calico.yaml
@@ -95,14 +107,34 @@ kubectl apply -f ./calico.yaml
 # 常見命令
 
 # metric-server 監控 pod 與節點負載
-使用 `metrics-server-amd64`，下載位置： [metrics-servcer](https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml)
+在 github 的專案 [Kubernetes Metrics Server](https://github.com/kubernetes-sigs/metrics-server), 下載位置： [metrics-servcer](https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml)
 
 - 安裝 metric-server
-在 github 的專案 [Kubernetes Metrics Server](https://github.com/kubernetes-sigs/metrics-server)
+下載 yaml
 ```bash
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+curl -O -L https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 ```
-- 修改 CA
+
+修改 CA
+```bash
+    spec:
+      containers:
+      - args:
+        - --cert-dir=/tmp
+        - --secure-port=4443
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+        - --kubelet-use-node-status-port
+        - --metric-resolution=15s
+        # 新增相信憑證
+        - --kubelet-insecure-tls=true
+        image: registry.k8s.io/metrics-server/metrics-server:v0.6.3
+
+```
+
+安裝 metrics-server
+```bash
+kubectl apply -f components.yaml
+```
 
 - 使用方式 
 

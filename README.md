@@ -67,6 +67,7 @@ https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad
 
 * [Certified Kubernetes Administrator (CKA) 考试完全指南（2022版）](https://www.udemy.com/course/k8s-chinese/)
 * [Certified Kubernetes Administrator (CKA) with Practice Tests](https://www.udemy.com/course/certified-kubernetes-administrator-with-practice-tests/)
+* [Udemy Labs – Certified Kubernetes Administrator with Practice Tests](https://kodekloud.com/courses/labs-certified-kubernetes-administrator-with-practice-tests/?utm_source=udemy&utm_medium=labs&utm_campaign=kubernetes)
 
 
 # 4. [容器模擬題](./container_test.md)
