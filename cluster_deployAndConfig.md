@@ -59,19 +59,26 @@ kubeadm join 192.168.153.102 --token <token value>
 ## 3. 安裝 pod network
 
 * get yaml
-**Calico**
-```bash
-curl -O -L https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
-```
-**flannel**
-```bash
-curl -O -L https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-```
+
+  **Calico**
+  ```bash
+  curl -O -L https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
+  ```
+  **flannel**
+  ```bash
+  curl -O -L https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+  ```
 
 * apply
-```
-kubectl apply -f ./calico.yaml
-```
+
+  **Calico**
+  ```bash
+  kubectl apply -f ./calico.yaml
+  ```
+  **flannel**
+  ```bash
+  kubectl apply -f ./kube-flannel.yml
+  ```
 
 ## 4. 刪除節點及重新加入
 
@@ -81,7 +88,7 @@ kubectl apply -f ./calico.yaml
    kubectl drain node02 --delete-emptydir-data --force --ignore-daemonsets
    ```
 - 刪除節點
-   ```bash
+  vag ```bash
    kubectl delete node node02
    ```
 - 檢查已刪除
