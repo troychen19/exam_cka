@@ -145,7 +145,30 @@ kubectl apply -f components.yaml
 
 - 使用方式 
 
+1. 查看節點負載
+   ```bash
+   kubectl top nodes --use-protocol-buffers
+   ```
+2. 查看 POD 的負載
+   ```bash
+   kubectl top pods -n kub-system --use-protocol-buffers
+   ```
 
 # 命名空間 namespace
 
+命名空間用來區分不同工能的 POD 群組，基本指令如下：
+1. 查看目前有多少 namespace
+   ```bash
+   kubectl get ns
+   ```
+2. 創建一個新的 namespace
+   ```bash
+   kubectl create ns ns1
+   ```
+
 # 升級 kubernetes
+## 一、節點升級步驟
+先升 master，再升 worker
+
+## 二、k8s 軟體升級
+先升 kubeadm，再執行 kubeadm upgrade。再升 kubelet 與 kubectl
