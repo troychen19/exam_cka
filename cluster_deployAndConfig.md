@@ -38,9 +38,7 @@
 ```bash
 kubeadm init --kubernetes-version=v1.26.5 \
 --upload-certs \
---control-plane-endpoint master:6443 \
 --pod-network-cidr=10.244.0.0/16
-
 ```
 參數：
  * --image-repository： container image 倉庫位置
@@ -167,8 +165,62 @@ kubectl apply -f components.yaml
    ```
 
 # 升級 kubernetes
-## 一、節點升級步驟
-先升 master，再升 worker
+先升 master，再升 worker, 先升 kubeadm 再用 kubeadm upgrade 升元件，最後再升 kubectl 與 kubelet
 
-## 二、k8s 軟體升級
-先升 kubeadm，再執行 kubeadm upgrade。再升 kubelet 與 kubectl
+1. 查看目前版本
+   ```bash
+     kubectl get nodes
+   ```
+2. 確定 yum source 中可用的 kubeadm 版本
+   ```bash
+     apt-cache madison kubeadm
+     apt-cache policy kubeadm
+   ```
+3. 升級 kubeadm
+   
+   不管升級 master 或 worker，都要先升 kubeadm，以下使用 1.26 升到 1.27 為例
+   ```bash
+      apt-mark unhold kubeadm && \
+      apt-get update && apt-get install -y kubeadm=1.27.4-00 && \
+      apt-mark hold kubeadm
+   ```
+   安裝完成後驗證 kubeadm 的版本
+   ```bash
+     kubeadm version
+   ```
+4. 透過 kubeadm upgrade plan 查看群集是否需要升級
+   ```bash
+     kubeadm upgrade plan
+   ```
+5. 把 master 設置為維護模式，並清空 pod
+   ```bash
+     kubectl drain master --ignore-daemonsets
+   ```
+6. 升級 master 上各組件
+   ```bash
+     kubeadm upgrade apply v1.27.3
+   ```
+7. 升級 master 上的 kubelet 和 kubectl
+
+   安裝 v1.27.4 的 kubelet 與 kubectl
+   ```bash
+     apt-mark unhold kubelet kubectl && \
+     apt-get update && apt-get install -y kubelet=1.27.4-00 kubectl=1.27.4-00 && \
+     apt-mark hold kubelet kubectl  
+   ```
+8. 重啟 kubelet 與 kubectl
+   ```bash
+      systemctl deamon-reload
+      systemctl restart kubelet
+   ```
+9. 完成後取消維護模式
+  ```bash
+    kubectl uncordon master
+  ```
+10. 升 worker
+    * 升 kubeadm 到 1.27.4
+    * 設定維護模式
+    * 升級元件 kubeadm upgrade node
+    * 升級 kubelet 與 kubectl
+    * 取消維護模式
+
