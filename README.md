@@ -72,6 +72,7 @@ https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad
 
 # 4. [容器模擬題](./container_test.md)
 # 5. [cluster安裝與配置](./cluster_deployAndConfig.md)
-# 5. [pod](./pod.md)
+# 6. [yaml 說明](./yaml.md)
+# 7. [pod](./pod.md)
 
 

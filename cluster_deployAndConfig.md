@@ -163,6 +163,17 @@ kubectl apply -f components.yaml
    ```bash
    kubectl create ns ns1
    ```
+3. 建立 pod 指定 namespcae
+   ```bash
+     kubectl run nginx --image=nginx --namespace=<namespace name>
+   ```
+4. 設定環境的 namespace
+   ```bash
+     kubectl config set-context --current --namespace=<name space>
+     # validate it
+     kubectl config view --minify | grep namespace:
+   ```
+
 
 # 升級 kubernetes
 先升 master，再升 worker, 先升 kubeadm 再用 kubeadm upgrade 升元件，最後再升 kubectl 與 kubelet

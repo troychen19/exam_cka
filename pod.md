@@ -10,7 +10,81 @@ POD 為 k8s 用來封裝管理 container 的單元，一個 POD 可含有多個 
 | ReplicaSet | apps/v1 |
 | Deployment | apps/v1 |
 
-# POS 會考題方向 
+一個 POD 可以有多個 container，先用以下指令產生 yaml 檔再修改
+```bash
+  kubectl run pod2 --image=nginx --image-pull-policy=IfNotPresent --dry-run=client -o yaml -- sh -c "echo aa ; sleep 1000" > pod2.yaml
+```
+
+修改後的 yaml，將上述的指令產出的 args 換為 command 並縮成一行
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: pod2
+  name: pod2
+spec:
+  containers:
+  # 第一個 container
+  - command: ["sh","-c","echo aa ; sleep 1000"]
+    image: nginx
+    imagePullPolicy: IfNotPresent
+    name: c1
+    resources: {}
+  # 第二個 container
+  - name: c2
+    image: nginx
+    imagePullPolicy: IfNotPresent
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+```
+# 初始化 POD
+
+在運行容器之前如果需要先做準備工作，容器才可以正常運作，那麼在運行前可先運行容器 A 或容器 B 做一些準備工作。只有所有的初始化容器都初始化完成才會啟動普通容器。
+例：
+建立名為 workdir 的 volume 再透過初始容器建立 aa.txt，然後普通容器掛載到 /xx 的目錄
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  name: myapp
+  labels:
+    app: myapp
+spec:
+  volumes:
+  - name: workdir # workdir 的 volume
+    emptyDir: {}
+  containers:
+  - image: nginx
+    imagePullPolicy: IfNotPresent
+    name: podx
+    volumeMounts:
+    - name: workdir
+      mountPath: "/xx"
+  initContainers: # 初始容器的配置
+  - name: poda
+    image: busybox
+    imagePullPolicy: IfNotPresent
+    command: ['sh', '-c', 'touch /work-dir/aa.txt']
+    volumeMounts:
+    - name: workdir
+      mountPath: "/work-dir"
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+```
+檢查檔案是否正確配置
+```bash
+  kubectl exec myapp -c podx -- ls /xx
+```
+
+
+# POS 考題方向 
 
 在 Pod 的題目範圍，
 1. 使用指令 kubectl 建立/刪除/修改 POD
