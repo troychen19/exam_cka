@@ -1,4 +1,4 @@
-# POD 說明
+# 一、 POD 說明
 
 POD 為 k8s 用來封裝管理 container 的單元，一個 POD 可含有多個 container。 
 
@@ -41,7 +41,7 @@ spec:
 status: {}
 
 ```
-# 初始化 POD
+# 二、 初始化 POD
 
 在運行容器之前如果需要先做準備工作，容器才可以正常運作，那麼在運行前可先運行容器 A 或容器 B 做一些準備工作。只有所有的初始化容器都初始化完成才會啟動普通容器。
 例：
@@ -83,8 +83,117 @@ status: {}
   kubectl exec myapp -c podx -- ls /xx
 ```
 
+---
 
-# POS 考題方向 
+# 三、 靜態 pod
+
+[ **重點** ] 創建靜態 pod，刪除靜態 pod
+
+正常狀況，靜態 pod 統一由 master 管理分配。在 node 上只要啟動 kubelet 就會自動創建 pod。比如使用 kubeadm 安裝的 kubeletes，裏面的 kube-apiserver 與 kube-scheduler 都是以 pod 方式運行。
+
+---
+
+# 四、手動指定 pod 運行的位置
+
+**重點**：給節點增加標簽，指定 pod 在特定的節點上執行
+
+## 4.1 給節點指定標籤
+
+1. 查看節點標籤
+```bash
+  kubectl get nodes --show-labels
+```
+2. 查看特定節點標籤
+```bash
+  kubectl get nod node1 --show-labels
+```
+3. 設置節點標籤
+設定標籤的語法是 `kubectl label node 節點名 key=value`，以下範例為設定 node1 的標籤 diskxx=ssdxx
+```bash
+  kubectl label node node1 diskxx=ssdxx
+```
+4. 查看是否設置成功
+```bash
+ kubeclt label node node1 --show-labels
+```
+5. 取消節點某個標籤
+在 key 後面加上-，-前面不要有空格
+```bash
+  kubectl label node node1 diskxx-
+```
+
+## 4.2 創建在特節點上運行的 pod
+
+在 pod 中，通過 nodeSelector 可以讓 pod 在含有特定標籤的節點上運行。
+1. 創建 podlabel.yaml 文件
+```yaml
+apiVersion: v1
+kind: pod
+metadata:
+  name: web1
+  label:
+    role: myrole
+spec:
+  nodeSelector:
+    diskxx: ssdxx
+  containers:
+  - name: web
+    image: nginx
+    imagePullPolicy: IfNotPresent
+```
+2. 創建 pod
+```bash
+  kubectl apply -f podlabel.yaml
+```
+3. 查看運行的節點
+```bash
+  kubectl get pods -o wids
+```
+
+## 4.3 Annotations 設置
+
+不管是 node 還是 pod，包括後面說的其它對象 (如： deployment)，都還有一個屬性 Annotation，這個屬性可以理解為註解。
+查看 annotations 屬性
+ ```bash
+   kubectl describe nodes node1
+ ```
+設置 annotations 可以透過以下指令
+ ```bash
+   kubectl annotate nodes node1 aa=123
+ ```
+取消 annotations
+```bash
+  kubectl annotate node node1 aa-
+```
+---
+
+# 五 節點的 cordon 與 drain
+
+## 5.1 cordon
+
+設定節點不可用，節點會被標記為 SchedulingDisabled，新建的 pod 不會分配到這個節點
+語法：
+```bash
+  kubectl crodon node1
+  kubectl uncrondon node1
+```
+
+## 5.2 drain
+
+drain 與 cordon 一樣，差別在於 drain 會將標記的 node 上的 pod 轉移到其它的 node。
+語法：
+```bash
+  kubectl drain node1
+  kubectl uncrondon node1
+```
+
+---
+
+六、 節點 taint 及 pod 的 tolerations
+
+---
+
+# 七、 POD 考題方向 
 
 在 Pod 的題目範圍，
 1. 使用指令 kubectl 建立/刪除/修改 POD
