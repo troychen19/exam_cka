@@ -75,5 +75,5 @@ https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad
 # 6. [yaml 說明](./yaml.md)
 # 7. [pod](./pod.md)
 # 8. [node taint 與 pod 的 tolerations](./taint_and_tolerations.md)
-
+# 9. [存儲管理](./storage.md)
 
