@@ -1,4 +1,4 @@
-# ReplicaSt
+# 一、ReplicaSt
 Replication 可讓部署的 POD 具有以下的特點：
 * High Availability：POD 異常，仍然可以正常提供服務
 * Load Balancing & Scaling： 可分散負載並隨時調整 POD 的數量
@@ -10,26 +10,79 @@ Replication 可讓部署的 POD 具有以下的特點：
 
 比較表
 | Replication Controller | Replica Set |
-|---|---|
+| --- | --- |
 | The Replication Controller is the original from of replication in Kubernetes | ReplicaSets are a higher-level API that gives the ability to easily run multiple instance of a given pod |
 | The Replication Controller uses __equality-based selectors__ to manage the pods.| ReplicaSet Controller user __set-baed selectors__ to manage the pods.|
 |The rolling-update command works with Replication Controllers| The rolling-update command won't work with ReplicaSets.|
 |Replica Controller is deprecated and replace by ReplicaSet| Deployments are recommended over RplicaSets.|
 
-## 1. Replication Controller
+**註** set-based 與 equality-based 的差異
 
+## 1.1 Replication Controller
 
+以下為使用 replicate controller 的範例，YAML 檔說明如下：
+1. apiVersion 為 v1 
+2. kind 為 ReplicationController
+3. 需要定義 template
+4. metadata 的 lables 要與 template 中的 metadata 定義的 labels 一致
+5. replicas 定義擴展的數量
+
+Ex：
+```yaml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: myapp-rc
+  labels:
+    app: myapp
+    type: front-app
+spec:
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-app
+    spec:
+      container:
+      - name: nginx-container
+        image: nginx
+replicas: 3
+```
 
 ## 2. ReplicaSet
 
-    not ste selector
+1. apiVersion 為 app/v1 
+2. kind 為 ReplicaSet
+3. 需要設定 seletor
+4. selector 定義的 matchLabels 要與 label 的 type 相同
 
-spec template
+Ex:
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myapp-replicaset
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
+    metadata:
+      name: myapp
+      label:
+        app: myapp
+        type: front-end
+    spce:
+      containers:
+      - name: nginx-container
+        image: nginx
+replicas: 3
+selector:
+  matchLabels:
+    type: front-end
+```
 
-
-replace set
-
-Labael and selector
 
 
 kubectl creat -f replicate-definetion.yam
