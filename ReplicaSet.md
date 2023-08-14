@@ -83,10 +83,33 @@ selector:
     type: front-end
 ```
 
+## 3. 操作指令
 
+1. 顯示 replicaset
+```bash
+ kubectl get replicaset -n default
 
-kubectl creat -f replicate-definetion.yam
+ kubectl get rs
+```
+2. 建立 replicaset
+```bash
+  kubectl creat -f replicate-definetion.yam
+```
+3. 檢視詳細資料
+```bash
+  kubectl describe replicaset <replicaset name>
+```
+4. 刪除 replicaset
+```bash
+  kubectl delete replicaset <replicaset name>
 
-kubectl get replicaset
-
-kubectl delete replicast
+  kubectl delete -f replicaset.yaml
+```
+5. 修改已存在的 replica
+```bash
+  kubectl edit repliacset <replicaset name>
+```
+6. 指令修改 replica 數量
+```bash
+  kubectl scale --replicas=<number> rs/<replicaset name>
+```
