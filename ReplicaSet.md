@@ -1,4 +1,4 @@
-# 一、ReplicaSt
+# 一、ReplicaSet
 Replication 可讓部署的 POD 具有以下的特點：
 * High Availability：POD 異常，仍然可以正常提供服務
 * Load Balancing & Scaling： 可分散負載並隨時調整 POD 的數量
