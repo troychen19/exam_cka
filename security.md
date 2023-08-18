@@ -123,4 +123,58 @@ value 值必需是 base64
               key: user1
    ```
 
-二、 configmap
+二、 configmap  
+configmap (簡稱 cm) 的作用和 secret 一樣，作為儲放密碼或 pod 的文件。
+2.1 創建 configmap  
+1. 使用命令的方式
+   ```bash
+    kubectl create cm my1 --from-literal=xx=tom --from-literal=yy=redhat
+   ```
+2. 將文件寫入 configmap
+   ```bash
+     kubectl create cm my2 --from-file=/etc/hosts
+   ```
+3. 檢視 configmap
+   ```bash
+     kubectl describe cm my1
+
+     kubectl get cm my1 -o yaml
+   ```
+2.2 使用 configmap  
+方法一：卷的方式  
+   ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: my-cm1-demo
+    spec:
+      volumes:
+      - name: xx
+        configMap:
+        name: my1
+      containers:
+      - name: nginx1
+        image: nginx
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: xx
+          mountPath: /mycm1   
+   ```
+方法二：變量的方式  
+   ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: var-cm1-demo
+    spec:
+      containers:
+      - name: pod2
+        image:  mysql:latest
+        imagePullPolicy: IfNotPresent
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapRef:
+              name: mycm1
+              key: yy
+   ```
