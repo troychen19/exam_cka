@@ -21,13 +21,106 @@ secret 主要用來存放密碼，secret 用鍵值的方式存儲。 secret 有�
    ```
 2. 使用命令建立 secret
    ```bash
-    kubectl create secret generic mysecret1 --from-literal=user1-pw=abc1234
+    kubectl create secret generic mysecret1 --from-literal=user1=abc1234
    ```
 3. 檢查建立的 secret
    ```bash
-     kubectl describe secrets
+    # 查看 mysecret1 的內容
+    kubectl describe secrets mysecret1
 
-     # 查看鍵值
-     kubectl get secret mysecret1 -o yaml
+    # 查看 mysecret1 鍵值
+    kubectl get secret mysecret1 -o yaml
    ```
-4. 將文件創建為 secret
+4. 將文件內容寫入 secret  
+以下範例將 hosts 內容寫入 secret
+   ```bash
+    kubectl create secret generic mysecret2 --from-file=/etc/hosts
+   ```
+   使用 base64 檢視
+   ```bash
+    kubectl get secret mysecret2 -o jsonpath={.data.hosts} | base64 -d
+   ```
+5. 建立變量文件並寫入 secret  
+建立變文件，文件內容編寫格式為 `變量1=值1`
+   ```
+    # 建立檔案 var.txt
+    key1=value1
+    key2=value2
+   ```
+   將 var.txt 寫入 secret
+   ```bash
+    kubectl create secret generic mysecret3 --from-env-file=var.txt
+   ```
+   檢查內容，可發現檔案內容的 key1, key2 變成 secret 的 key 值
+   ```bash
+    kubect get secret mysecret3 -o jsonpath={.data.key1} | base64 -d
+   ```
+6. 使用 yaml 文件建立 secret  
+value 值必需是 base64
+   ```yaml
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: mysecret4
+      namespace: mysecret
+    type: Opaque
+    data:
+      key1: dmFsdWUx
+      key2: dmFsdWUy
+   ```
+7. 使用 secret  
+**使用卷的方式**  
+這種方式是在 pod 的 yaml 建立 secret 的卷，然後掛載到某個指定目錄
+   ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: sec_volum_demo
+      labels:
+        run: nginx
+    spec:
+      volumes:
+      - name: mysecret
+        secret:
+          secretName: mysecret1
+     containers:
+     - name: pod1
+       image: nginx
+       imagePullPolicy: IfNotPresent
+       volumeMounts:
+       - name: mysecret
+         mountPath: /mysecret
+   ```
+檢查 /mysecret 是否出現 key 值
+   ```bash
+     kubectl exec sec-vol-demo -- ls /mysecret
+   ```
+使用此方式可以將 nginx 配置寫在 secret 就不用重新編譯 image 了
+**使用變量的方式**  
+在 pod 中想用變量的話，格式為
+   ```
+    env:
+      - name: 變量名
+        value: 值
+   ```
+如果要使用 sercet 則將 value 改為 valueFrom
+範例： 以下的 mysql root password 的值使用 mysecret1 的 user1
+   ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: var-sec-demo
+    spec:
+      containers:
+      - name: pod2
+        image:  mysql:latest
+        imagePullPolicy: IfNotPresent
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysecret1
+              key: user1
+   ```
+
+二、 configmap
