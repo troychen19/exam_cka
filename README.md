@@ -79,3 +79,4 @@ https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad
 # 10. [密碼管理](./security.md)
 # 11. [deployment](./deployment.md)
 # 12. [daemonset 及其它控制器](./daemontsetAndController.md)
+# 13. [探針](./liveness.md)
