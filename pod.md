@@ -105,21 +105,21 @@ status: {}
 ```
 2. 查看特定節點標籤
 ```bash
-  kubectl get nod node1 --show-labels
+  kubectl get nod node01 --show-labels
 ```
 3. 設置節點標籤
 設定標籤的語法是 `kubectl label node 節點名 key=value`，以下範例為設定 node1 的標籤 diskxx=ssdxx
 ```bash
-  kubectl label node node1 diskxx=ssdxx
+  kubectl label node node01 diskxx=ssdxx
 ```
 4. 查看是否設置成功
 ```bash
- kubeclt label node node1 --show-labels
+ kubeclt label node node01 --show-labels
 ```
 5. 取消節點某個標籤
 在 key 後面加上-，-前面不要有空格
 ```bash
-  kubectl label node node1 diskxx-
+  kubectl label node node01 diskxx-
 ```
 
 ## 4.2 創建在特節點上運行的 pod

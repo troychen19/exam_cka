@@ -77,3 +77,5 @@ https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad
 # 8. [node taint 與 pod 的 tolerations](./taint_and_tolerations.md)
 # 9. [存儲管理](./storage.md)
 # 10. [密碼管理](./security.md)
+# 11. [deployment](./deployment.md)
+# 12. [daemonset 及其它控制器](./daemontsetAndController.md)
