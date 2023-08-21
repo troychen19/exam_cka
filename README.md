@@ -39,6 +39,10 @@ kubectl apply -f ./Flannel.yaml
 
 # 2. 考試相關說明
 
+* [中文報名網站](https://training.linuxfoundation.cn/)
+* [英文報名網站](https://trainingportal.linuxfoundation.org)
+* [中文監考者報名網站](https://trainingportal.linuxfoundation.org/courses/certified-kubernetes-administrator-china-exam-cka-cn)
+
 考試中可查閱的文件
 * https://kubernetes.io/docs/concepts/
 * https://kubernetes.io/docs/tasks/
