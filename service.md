@@ -30,7 +30,7 @@ expose 的目標可以是 rc (replica) 、 svc (service)、 pod、 deployment，
    ```bash
     kubectl scale deploy web --replicas=3
    ```
-5. 查看 svc 的 endpoint 也加入了新的 pod ip
+5. 查看 svc 的 endpoint 也加入了新的 pod ip，表示三個 node 都可以使用這個 service
 6. 刪除 svc
    ```bash
     kubectl delete svc web
@@ -56,4 +56,4 @@ expose 的目標可以是 rc (replica) 、 svc (service)、 pod、 deployment，
 
 ```bash
  kubectl expose svc web-svc --name=myweb --port=80 --type=NodePort
-```
+``` 
