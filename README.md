@@ -37,6 +37,9 @@ curl https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel
 kubectl apply -f ./Flannel.yaml
 ```
 
+友善工具
+kubecontext + kubens
+
 # 2. 考試相關說明
 
 * [考試報名流程](https://blog.51cto.com/u_7075695/3175461)
@@ -88,3 +91,4 @@ https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad
 # 14. [job](job.md)
 # 15. [服務管理](./service.md)
 # 16. [網路管理](./networking.md)
+# 17. [安全管理](./role.md)
