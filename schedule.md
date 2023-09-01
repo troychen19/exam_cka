@@ -10,7 +10,27 @@
 
 ## Labels 與 Selector
 
-在 pod 定義 lablel ，讓 RepliacSet 與 Service  用來識別要傳送的 pod，每當擴展 repilac 新產生的 pod label 會與 relplica 相同
+
+在 pod 定義 lablel ，讓 ReplicaS 與 Service  用來識別要傳送的 pod，每當擴展 repilac 新產生的 pod label 會與 relplica 相同
+使用 service 或 replica 需要先在 pod 定義 label
+語法:以下定義兩個 label app=App1, function=Front-end
+```yaml
+ apiVersion: v1
+ kind: Pod
+ metadata:
+  name: simple-webapp
+  labels:
+    app: App1
+    function: Front-end
+ spec:
+  containers:
+  - name: simple-webapp
+    image: simple-webapp
+    ports:
+    - containerPort: 8080
+```
+如需要使用 replicas 設定如下：
+各層的 labels 設定都要一致，同時在 selector 設定 match app=App1
 ```yaml
  apiVersion: apps/v1
  kind: ReplicaSet
@@ -100,7 +120,6 @@ operators 的種類有：
 * In：在 key=value 的範圍
 * NotIn
 * Exists：只要 key 存在就符合
-
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -138,3 +157,5 @@ LimitRange 使用在 namespace
 ResourceQuota 
 
 ## DaemonSet
+=======
+
