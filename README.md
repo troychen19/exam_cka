@@ -82,7 +82,7 @@ https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad
 # 5. [cluster安裝與配置](./cluster_deployAndConfig.md)
 # 6. [yaml 說明](./yaml.md)
 # 7. [pod](./pod.md)
-# 8. [node taint 與 pod 的 tolerations](./taint_and_tolerations.md)
+# 8. [scheduler](./schedule.md)
 # 9. [存儲管理](./storage.md)
 # 10. [密碼管理](./security.md)
 # 11. [deployment](./deployment.md)
