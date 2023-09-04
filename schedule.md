@@ -10,7 +10,6 @@
 
 ## Labels 與 Selector
 
-
 在 pod 定義 lablel ，讓 ReplicaS 與 Service  用來識別要傳送的 pod，每當擴展 repilac 新產生的 pod label 會與 relplica 相同
 使用 service 或 replica 需要先在 pod 定義 label
 語法:以下定義兩個 label app=App1, function=Front-end
@@ -157,5 +156,4 @@ LimitRange 使用在 namespace
 ResourceQuota 
 
 ## DaemonSet
-=======
 
