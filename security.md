@@ -140,6 +140,17 @@ configmap (簡稱 cm) 的作用和 secret 一樣，作為儲放密碼或 pod 的
 
      kubectl get cm my1 -o yaml
    ```
+可用 dry-run 來建立基本的 temp，再修改值
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cfmap-demp
+data:
+  KEY1: value1
+  USER: myname
+```
+
 2.2 使用 configmap  
 方法一：卷的方式  
    ```yaml
