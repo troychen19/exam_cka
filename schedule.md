@@ -79,10 +79,21 @@ k8s doc:(Concepts/Scheduling/Taints and Tolerations)
 3. 要將 pod 部署在設有 taint 的 node
 需要在 yaml 中加入以下的設定，以下的設定表示 pod 會被部署到 taint 標註為 key1=node1 的節點
 ```yaml
-tolerations:
-- key: "key1" # key 的值
-  operator: "Equal"
-  value: "node1" # value 的值
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    env: test
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+  tolerations:
+  - key: "example-key"
+    operator: "Exists"
+    effect: "NoSchedule"
 ```
 operator 的值有兩種 Equal 和 Exists， Equal 的 key 與 value 需要和 node 相同，Exists 則不需指定 value 值
 使用 Exists 時，設定 node 與 pods 設定檔都不能設定 value 
@@ -155,5 +166,82 @@ LimitRange 使用在 namespace
 
 ResourceQuota 
 
-## DaemonSet
+Resource 設定範例
 
+1. yaml 的 resource
+在 yaml 可以透過 resource 設定容器最多/最少的 CPU 與記憶體
+   ```yaml
+     apiVersion: v1
+     kind: pod
+     metadata:
+       run: web1
+     spec:
+       containers:
+       - images: nginx
+         imagePullPolicy: IfNotPresent
+         name: web1
+         resources:
+           requests:
+             cpu: 50m
+             memory: 10Gi
+           limits:
+             cpu: 100m
+             memory: 20Gi
+   ```
+requests 設定的是 pod 最小運行配置，limits 則是最多可消耗多少資源。
+CPU 設定說明：
+CPU 單位是 m，在 kubernete 系統中，一個核心 (1 core) 相當於 1000 個微核心 (millcores)，因此 500m 相當於 0.5 core，即 1/2 core。
+2. limitrange
+limitrange 用來限制 pod 或容器最多能運行的 memory 與 CPU，每個 pvc 最多能使用多少空間等。
+yaml 如下：
+   ```yaml
+    aplVersion: v1
+    kind: limitrange
+    metadata:
+      name: mem-limit-range
+    spce:
+      limits:
+      - max:
+          memory: 512Mi
+        min:
+          memory: 256Mi
+        type: Container
+   ```
+意思是 limitrange 的名字是 mem-limit-range，每個容器只能運行 512M
+設定 pod 使用 limit
+   ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: demo
+      labels:
+        purpose: demonstrate-envars
+    spec:
+      containers:
+      - name: demo1
+        image: centos:latest
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c', 'sleep 5000']
+   ```
+安裝 memload 測試，container 為無法取到超過 512M 的記憶體
+3. resourcequota
+resource 的意思是，限制某個命名空間最多只能調多少資源，比如最多能運行多少個 svc 與 pod
+   ```yaml
+    apiVersion: v1
+    kind: ResourceQuota
+    metadata:
+      name: compute-resource
+    spec:
+      hard:
+        pods: "4"
+        service: "2"
+   ```
+
+## DaemonSet
+不需要指定副本數，每個 node 都會自動部署一個 pod，通常用來 monitor 或 log 記錄
+
+## Static Pod
+是否是 static pod 的條件是 pod yaml 檔是否在 /var/lib/kubelet/config.yml 中 staticpod 定義的目錄
+要刪除 static pod 必須先移除該目錄下的檔案，再執行 kubelet delete pod
+
+## multi schedulers
