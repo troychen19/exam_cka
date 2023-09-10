@@ -19,7 +19,7 @@ secret 主要用來存放密碼，secret 用鍵值的方式存儲。 secret 有�
    ```bash
      kubectl get secrets -n default
    ```
-2. 使用命令建立 secret
+2. 使用命令建立 secret, 一定要加參數 gereric 表示使用通用的方式建立
    ```bash
     kubectl create secret generic mysecret1 --from-literal=user1=abc1234
    ```
@@ -32,7 +32,7 @@ secret 主要用來存放密碼，secret 用鍵值的方式存儲。 secret 有�
     kubectl get secret mysecret1 -o yaml
    ```
 4. 將文件內容寫入 secret  
-以下範例將 hosts 內容寫入 secret
+以下範例將 hosts 內容寫入 secret, 一定要加參數 gereric 表示使用通用的方式建立
    ```bash
     kubectl create secret generic mysecret2 --from-file=/etc/hosts
    ```
@@ -47,7 +47,7 @@ secret 主要用來存放密碼，secret 用鍵值的方式存儲。 secret 有�
     key1=value1
     key2=value2
    ```
-   將 var.txt 寫入 secret
+   將 var.txt 寫入 secret, 一定要加參數 gereric 表示使用通用的方式建立
    ```bash
     kubectl create secret generic mysecret3 --from-env-file=var.txt
    ```
@@ -56,7 +56,7 @@ secret 主要用來存放密碼，secret 用鍵值的方式存儲。 secret 有�
     kubect get secret mysecret3 -o jsonpath={.data.key1} | base64 -d
    ```
 6. 使用 yaml 文件建立 secret  
-value 值必需是 base64
+value 值必需是 base64，需注意 type 可加可不加，Opaque 表示不透明
    ```yaml
     apiVersion: v1
     kind: Secret
@@ -69,7 +69,7 @@ value 值必需是 base64
       key2: dmFsdWUy
    ```
 7. 使用 secret  
-**使用卷的方式**  
+方法一： **使用卷的方式**  
 這種方式是在 pod 的 yaml 建立 secret 的卷，然後掛載到某個指定目錄
    ```yaml
     apiVersion: v1
@@ -96,7 +96,7 @@ value 值必需是 base64
      kubectl exec sec-vol-demo -- ls /mysecret
    ```
 使用此方式可以將 nginx 配置寫在 secret 就不用重新編譯 image 了
-**使用變量的方式**  
+方法二： **使用變量的方式**  
 在 pod 中想用變量的話，格式為
    ```
     env:
@@ -122,7 +122,22 @@ value 值必需是 base64
               name: mysecret1
               key: user1
    ```
-
+方法三： **指定使用 secret**
+```yaml
+ apiVersion: v1
+ kind: Pod
+ metadata:
+   name: simple-webapp-color
+ spec:
+  containers:
+  - name: simple-webapp-color
+    image: simple-webapp-color
+    ports:
+    - containerPort: 8080
+    envFrom:
+    - secretRef:
+        name: mysecret1
+```
 二、 configmap  
 configmap (簡稱 cm) 的作用和 secret 一樣，作為儲放密碼或 pod 的文件。
 2.1 創建 configmap  
@@ -145,7 +160,7 @@ configmap (簡稱 cm) 的作用和 secret 一樣，作為儲放密碼或 pod 的
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: cfmap-demp
+  name: cfmap-demo
 data:
   KEY1: value1
   USER: myname
@@ -188,4 +203,20 @@ data:
             configMapRef:
               name: mycm1
               key: yy
+   ```
+方法三：指定使用的 configmap
+   ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: simple-webapp-color
+    spec:
+    containers:
+    - name: simple-webapp-color
+      image: simple-webapp-color
+      ports:
+      - containerPort: 8080
+      envFrom:
+      - configMapRef:
+          name: cfmap-demo
    ```
