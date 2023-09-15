@@ -166,6 +166,7 @@ service account
 ** Authorization: RBAC, ABAC, Node, Webhook
 
 ## Authentication
+這是不安全的方式，只是用來了解 k8s 的安全機制
 ** account admins, developers, end users how to access api-server.
 ** kube-apiserver: static password file, static token file, Certificates, Identity Services
 ** basic user csv file format:
@@ -178,16 +179,133 @@ password123,user2,u0002
 ** Authenticate User , curl -v -k http://master:6443/api/v1/pods -u "user1:password123"
 ** Use Token '--token-auth-file=user.csv'
 
+## 檢視 k8s 的設定與使用
 
-## TLS cerificates for cluster components
+以下的路徑為安裝好 k8s 後，設定檔位置：
+* k8s static pod: /etc/kubernets/manifest
+* k8s ca path: /etc/kubernetes/pki/
+* etcd ca path: /etc/kubernetes/pki/etcd
 
+查看 /etc/kubernetes/manifests/kube-apiserver.yaml 可看到以下使用憑證的設定
+```yaml
+spec:
+  container:
+  - command:
+    - kube-apiserver
+    - --authorization-mode-Node.RBAC
+    
+    ...
 
-## Secure Persistent key-value store
+    - --client-ca-file=/etc/kubernetes/pki/ca.crt
+    - --disable-admission-plugins=PersistentVolumeLabel
+    
+    ...
 
-## Authorization
+    - --etcd-cafile=/etc/kubernetes/pki/etcd/ca.crt
+    - --etcd-certfile=/etc/kubernetes/pki/apiserver-etcd-client.crt
+    - --etcd-keyfile=/etc/kubernetes/pki/apserver-etcd-client.key
 
-## Images Security
+    ...
 
-## Security Context
+    --kubetlet-cleint-certificate=/etc/kubernetes/pki/apiserver-kubelete-client.crt
 
-## Network Policies
+    ...
+
+    - --tls-cert-file=/etc/kubernetes/pki/apiserver.crt
+    - --tls-private-key-file=/etc/kubernetes/pki/apiserver.key
+```
+
+可透過 Certificate API 建立個人憑證來使用 k8s 的各服務
+1. gen ssk key
+```bash
+openssl genrsa -out jane.key 2048
+```
+2. gen CSR
+```bash
+openssl req -new -key jane.key -sub "/CN=jane" -out jane.csr
+```
+3. 將 CSR 內容用 base64 編碼
+```bash
+cat jane.csr | base64
+```
+4. 建立憑證請求檔
+```yaml
+aplVersion: certificates.k8s.io/v1beta1
+kind: CertificateSigningRequest
+metadata:
+  name: jane
+spec:
+  groups:
+  - system: authenticated
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  request:
+    <certificate-goes-here>
+```
+5. apply 與 approve
+```bash
+kubectl apply -f jane_req.yaml
+
+kubectl get csr
+
+kubectl certificate approve jane
+```
+
+## Kube Config
+執行 kubeclt 的憑證放在 /root/.kube 目錄，在 config 檔可設定多組不同的登入身份
+設定方式內容如下：
+```yml
+apiVersion: v1
+kind: Config
+current-context: dev-user@google
+
+clusters:
+- name: my-kube-playground
+- name: development
+- name: production
+- name: google
+
+contexts:
+- name: my-kube-admin@my-kube-playground
+- name: dev-user@google
+- name: prod-user@production
+
+users:
+- name: my-kube-admin
+- name: admin
+- name: dev-user
+- name: prod-user
+```
+檢視：
+```bash
+kubectl config view
+
+kubectl view --kubeconfig-my-custom-config
+```
+
+切換 namespace
+```yaml
+apiVersion: v1
+kind: Config
+
+clusters:
+- name: production
+  cluster:
+    certificate-authority: ca.crt
+    server: https://172.17.0.51:6443
+
+contexts:
+- name: admin@production
+  context:
+    cluster: production
+    user: admin
+    namespace: finance
+
+users:
+- name: admin
+  user:
+    client-certificate: admin.crt
+    client-key: admin.key
+```
