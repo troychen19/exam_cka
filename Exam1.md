@@ -1,22 +1,23 @@
-1. RBAC 授權 (強制記憶，3條命令)
+# 1. RBAC 授權 (強制記憶，3條命令)
 設置配置環境
 ```bash
 kubectl config use-context k8s
 ```
-Context  
+Context：  
 為譯管道建一個新的 ClusterRole 並將其綁定到範圍特定的 namespace的特定 ServiceAccount
 
-Task  
-創建一個名為 depoymemt-clusterrole 且僅允許創建以下資源類型的新 ClusterRole：  
+Task：  
+創建一個名為 deploymemt-clusterrole 且僅允許創建以下資源類型的新 ClusterRole：  
 * Deployment 
 * StatefulSet 
 * DaemonSet
 
-在現有的 namespace app-team1 中創建一個名為 cicd-token 的新 ServiceAccount  
-限於 namespace app-team1，將新的 ClusterRole deployment-clusterrole 綁定到新的 ServiceAccount cicd-token
+在現有的 namespace app-team1 中創建一個名為 cicd-token 的新 ServiceAccount，並只能用在 namespace app-team1，
+將新的 ClusterRole deployment-clusterrole 綁定到新的 ServiceAccount cicd-token
 
-ANS:
-解題技巧
+## ANS:  
+解題技巧  
+要避免打錯字，可用 dry-run 產 yaml 檔後檢查
 1. 創建 clusterrole (Reference/API AccessControl/Using RBAC Authorization)
 2. 建立 serviceaccount
 3. 將 cluserrole 與 serviceacount 綁定
@@ -33,9 +34,10 @@ kubectl create rolebinding cicd-token --serviceaccount-app-team1:cicd-token --cl
 kubectl describe rolebinding cicd-token-rolebinding -n app-team1
 
 ```
+
 ---
 
-2. 統計使用 CPU 最高的 Pod (強制記記憶)
+# 2. 統計使用 CPU 最高的 Pod (強制記記憶)
 設置配置環境
 ```bash
 kubectl config use-context k8s
@@ -52,7 +54,7 @@ echo "<podname>" > /out/KUTR00401/KUR00401.txt
 
 ---
 
-3. 網路策略 (拷貝 yaml) (注意 yaml 位置)
+# 3. 網路策略 (拷貝 yaml) (注意 yaml 位置)
 ```bash
 kubectl config use-context hk8s
 ```
@@ -94,7 +96,7 @@ kubectl get networkpolicy -n my-app
 
 ---
 
-4. SVC 暴露應用
+# 4. SVC 暴露應用
 ```bash
 kubectl config use-context k8s
 ```
@@ -117,11 +119,13 @@ kubectl edit deploy front-end
         protocol: TCP #protocol不写也是可以的，因为默认就是TCP
         containerPort: 80
 ```
+
+```bash
 kubect expose pod front-end --port 80 --target=80 --type=NodePort  --name front-end-svc
 ```
 ---
 
-5. Ingress 創建 (拷貝 yaml) (注意 yaml 位置)
+# 5. Ingress 創建 (拷貝 yaml) (注意 yaml 位置)
 環境
 ```bash
 kubectl config use-context k8s
@@ -163,7 +167,7 @@ spec:
 
 ---
 
-6. 擴充 deployment 副本數量 (強制記憶)
+# 6. 擴充 deployment 副本數量 (強制記憶)
 環境
 ```bash
 kubectl config use-context k8s
@@ -180,7 +184,7 @@ kubectl scale deploy loadbalance --replicas=5
 
 ---
 
-7. 調度 pod 到指定節點  
+# 7. 調度 pod 到指定節點  
 環境
 ```bash
 kubectl config use-context k8s
@@ -219,7 +223,7 @@ spec:
 
 ---
 
-8. 查看可用節點數量
+# 8. 查看可用節點數量
 環境
 ```bash
 kubectl config use-context k8s
@@ -238,7 +242,7 @@ kubectl get nodes --show-labels | grep ready | gerp -v NoSchedule
 echo <number> > /opt/KUSC00402/kusc00402.txt
 ```
 
-9. 創建多容器的 pod
+# 9. 創建多容器的 pod
 環境
 ```bash
 kubectl config use-context k8s
@@ -265,4 +269,6 @@ spec:
     image: memcached
 ```
 
-10. 創建 PV
+---
+
+# 10. 創建 PV
