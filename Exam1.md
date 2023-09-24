@@ -46,6 +46,8 @@ Task
 通過 pod label name=cpu-utilizer，找到運行時佔用大量 CPU 的 pod，並將佔用 CPU 最高的 pod 寫入文件
 /out/KUTR00401/KUTR00401.txt
 
+
+## ANS:
 ```bash
 kubectl config use-context k8s
 kubectl top pods -l name=cpu-utilizer --sort-by="cpu" -A 
@@ -65,7 +67,7 @@ Task
 **不允許**對没有在監聴端口 8008 的 pod 訪問
 **不允計**不來自 namespace my-app 中的 Pods 訪問
 
-ANS：
+## ANS：
 ```bash
 kubectl config use-context hk8s
 ```
@@ -100,10 +102,11 @@ kubectl get networkpolicy -n my-app
 ```bash
 kubectl config use-context k8s
 ```
-請重新配置現在的部屬 front-end 以及添加名為 http 的端口規範來公開現有容哭 nginx 的 端口 80/tcp
+請重新配置現在的部屬 front-end 以及添加名為 http 的端口規範來公開現有容器 nginx 的 端口 80/tcp
 創建一個名為 front-end-svc 的新服務，以公開容器端口 http
 配置此服務，以通過排定的節點上的 NodePort 來公開整個 Pods
 
+## ANS
 ```bash
 kubectl config use-context k8s
 
@@ -141,8 +144,11 @@ Namespace: ing-internal
 curl -kL <Internal_ip>/hello
 ```
 
-ANS:  
+## ANS:  
 kubectl config use-context k8s
+kbuectl get svc -n ing-internal
+kubectl create ingress pong --rule=/hello=sample-nginx:5678 -n ing-internal --dry-run=client -o yaml > ping-ingress.yaml
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -152,7 +158,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  ingressClassName: nginx-example
+  ingressClassName: nginx
   rules:
   - http:
       paths:
@@ -174,9 +180,9 @@ kubectl config use-context k8s
 ```
 
 Task    
-將 deployment 從 loadbalancer 擴展至 5 pods
+將 deployment - loadbalancer 擴展至 5 pods
 
-ANS:  
+## ANS:  
 ```base
 kubectl config use-context k8s
 kubectl scale deploy loadbalance --replicas=5 
@@ -196,7 +202,7 @@ Task
 Imange: nginx
 Node Selecot: disk=ssd
 
-ANS:
+## ANS:
 
 1. label node disk=ssd
 2. add pod nodeselet disk=ssd
@@ -233,11 +239,12 @@ Task:
 檢查有多少 worker node 已淮備就緒 (不包括被打上 Taint:NoSchedule 的節點)
 並將數量寫入 /opt/KUSC00402/kusc00402.txt
 
-ANS:  
+## ANS:  
 ```bash
 kubectl config use-context k8s
 
-kubectl get nodes --show-labels | grep ready | gerp -v NoSchedule
+kubectl get nodes | grep Ready
+kubectl describe nodes | grep Taint
 
 echo <number> > /opt/KUSC00402/kusc00402.txt
 ```
@@ -271,4 +278,213 @@ spec:
 
 ---
 
-# 10. 創建 PV
+# 10. 創建 PV (yaml 位置)
+環境
+```bash
+kubectl config use-context hk8s
+```
+
+Task:  
+創建一個名為 app-data 的 persistent volume 容量為 2Gi，
+訪問模式為 ReadWriteOne，volume 類型為 hostPath，位於 /svc/app-data
+
+## ANS
+
+Concepts/Stroage/Volume
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: app-data
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+  - ReadWriteOnce
+  hostPath:
+    path: /svc/app-data
+    type: Directory
+
+```
+
+---
+
+11. 創建 PVC (注意 yaml 位置)
+```
+設置環境：  
+kubectl config use-context ok8s
+```
+
+Task  
+創建一個新的 PersistentVolumeClaim
+名稱： pv-volume  
+Class: csi-hostpath-sc  
+容量： 10Mi  
+
+創建一個新的 Pod，此 Pod 將作為 volume 掛載到 PersistentVolumeClaim  
+名稱：web-server  
+Iamge: nginx  
+掛載路徑： /usr/share/nginx/html
+配置新的 Pod，以對 volume 具有 ReadWriteOnce 的權限
+
+最後，使用 kubectl edit 或 kubectl patch 將 PersistentVolumeClaim 的容量擴展為 70Mi，並記錄此更改
+
+## ANS
+
+/concepts/storage/persistent volumes
+1. Create PersistentVolumeClaim
+2. Create Pod use PerstentVolumeClaim
+3. kubectl edit pv-volume --record
+
+---
+
+# 12 獲取 Pod 錯誤日誌
+```
+設置環境：  
+kubectl config use-context k8s
+```
+Task  
+監控 pod bar 的日誌：
+提取與錯誤 file-not-found 相對應的日誌行
+將這些日誌寫入 /out/KUTR00/bar
+
+## ANS
+
+kubectl logs bar | grep file-not-found
+write to file
+
+---
+
+# 13 使用 sidecar 代理容器日誌 (兩個 pod 共享 pv)
+```
+設置環境：  
+kubectl config use-context k8s
+```
+
+Context  
+將一個現有的 Pod 集成到 kubernetes 的內置日誌記錄體系結構中 (例 kubectl logs)
+添加 streaming sidecar 容器是實現此要求的一種好方法
+
+Task  
+使用 busybox Image 來將名為 sidecar 的 sidecar 容器添加到現有的 Pod legacy-app 中，
+新的 sidecar 容器必須運行以下命令：
+```
+/bin/sh -c tail -n+1 -f /var/log/legacy-app.log
+```
+使用安裝在 /var/log 的 volume，使日誌文件 legacy-app.log 可用於 sidecar 容器  
+```
+除了添加所需的 volume mount 以外，請勿更改現有容器的規格
+```
+## ANS  
+Concepts/Cluster Administration/Logging Architecture
+
+kubectl get pod big-core-app -o yaml > big-core-app.yaml
+kubectl delete big-core-app
+## edit big-core-app.yaml
+kubectl apply -f big-core-app.yaml
+
+---
+
+# 14 升級集群 (如何離線主機，並升級控制面板和升升級節點)
+```
+設置環境：  
+kubectl config use-context k8s
+```
+Task  
+現有的 kubernetes 集群正運行版本 1.20.0， **僅將主節點上** 的所有 kubernetes 控制平面和節點組升級到版本 1.20.1
+確保在升之前 drain 主節點，並在升級後 uncordon 主節點
+```
+可使用以下命令通過 ssh 連接到主節點：
+ssh mk8s-master-0
+
+可使用以下命令在該主節點上獲取更高權限：
+sudo -i
+```
+另外，在主節點上升級 kubelet 和 kubectl
+
+## ANS:
+Task/Administration with kubeadm/Upgrading kubeadm clusters
+```
+kubectl drain k8s-master-0 --ignore-daemonset
+apt update
+apt install kubeadm=1.20.1-00 -y
+kubeadm upgrade plan
+kubeadm upgrade apply v1.20.1-00 -y --etcd-upgrade=false
+kubectl uncordon k8s-master-0
+
+apt install kubelet=1.20.1-00 kubectl=1.20.1-00
+
+systemctl restart kubelet
+
+kubectl get node
+
+
+```
+
+---
+
+# 15 etcd 備份與恢復
+```
+設置環境：  
+exit
+```
+
+Task  
+為運行在 https://127.0.0.1:2379 上的現在 etcd 實例創建快照保存到 /data/backup/etcd-snapshot.db，
+然後還原位於 /data/backup/etcd-snapshot-previous.db 的先前快照
+```
+提供以下 TLS 憑證和密鑰，以通過 etcdctl 連接服務器
+CA cert: /opt/KUIN00601/ca.crt
+client cert: /opt/KUIN00601/etcd-client.crt
+client key: /opt/KUIN00601/etcd-client.key
+```
+## ANS:
+Tasks/Administror a Cluster/Operating etcd cluster for kubenetes
+```bash
+# backup
+ETCDCTL_API=3 etcdctl -h
+snapshot
+etcdctl snapshot save /data/backup/etcd-snapshot.db
+
+# restore
+systemctl stop etcd
+etcdctl snapshot restore /data/bachup/etcd-snapshot.db
+
+```
+
+# 16 排查集群中故障節點
+```
+設置環境：  
+kubectl config use-context  wk8s
+```
+名為 wk8s-node-0 的 kubernetes worker node 處於 NotReady 狀態，調查發生原因，並採取相應措施將 Node 恢復為 Ready
+可用以下指令連到故障 node
+```
+ssh wk8s-node-0
+sudo -i
+```
+
+# ANS:
+依故障原因修改 kueblet 未啟動
+```
+systemctl status kubelet
+systemctl start kubelet
+systemctl enable kubelet 
+```
+
+# 17 節點維護 (cordon 與 drain 的使用)
+```
+設置環境：  
+kubectl config use-context  ek8s
+```
+
+Task  
+將名為 ek8s-node-1 的 node 設置為不可用，並重新調度該 node 上運行的 pods
+
+## ANS:
+
+```bash
+kubelet cordan node ek8s-node-1
+kubelet drain --ignort-daemonsets node ek8s-node-1
+
+```

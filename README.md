@@ -46,6 +46,8 @@ kubecontext + kubens
 * [中文報名網站](https://training.linuxfoundation.cn/)
 * [英文報名網站](https://trainingportal.linuxfoundation.org)
 * [中文監考者考試註冊](https://trainingportal.linuxfoundation.org/courses/certified-kubernetes-administrator-china-exam-cka-cn)
+* [考試環境檢查](https://syscheck.bridge.psiexams.com/)
+* [考古題](https://www.vcesoft.com/)
 
 考試中可查閱的文件
 * https://kubernetes.io/docs/concepts/
