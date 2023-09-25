@@ -382,7 +382,7 @@ Concepts/Cluster Administration/Logging Architecture
 kubectl get pod big-core-app -o yaml > big-core-app.yaml
 kubectl delete big-core-app
 ## edit big-core-app.yaml
-kubectl apply -f big-core-app.yaml
+kubectl apply -f big-core-app.yamlva
 
 ---
 
