@@ -68,6 +68,7 @@ Task
 **不允計**不來自 namespace my-app 中的 Pods 訪問
 
 ## ANS：
+解題技巧： yaml 位置 Concepts -> Services, Load Balancing, and Networking -> Network Policies
 ```bash
 kubectl config use-context hk8s
 ```
