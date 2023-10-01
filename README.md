@@ -30,7 +30,7 @@ kubectl apply -f ./calico.yaml
 2. **Flannel**
 * download yaml
 ```
-curl https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml -O
+curl https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml -O -L
 ```
 * apply
 ```

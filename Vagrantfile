@@ -28,7 +28,7 @@ systemctl disable --now ufw >/dev/null 2>&1
 # enable netfilter
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
-br_netfilterexit
+br_netfilter
 EOF
 sudo modprobe overlay
 sudo modprobe br_netfilter
