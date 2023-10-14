@@ -139,3 +139,49 @@ To view only prod-redis pod with less details:
 ```
 kubectl get pods -o wide | grep prod-redis
 ```
+
+---
+
+# 6. Upgrade the current version of kubernetes from 1.26.0 to 1.27.0 exactly using the kubeadm utility.
+
+## ANS:
+```
+root@controlplane:~# kubectl drain controlplane --ignore-daemonsets
+root@controlplane:~# apt update
+root@controlplane:~# apt-get install kubeadm=1.27.0-00
+root@controlplane:~# kubeadm upgrade plan v1.27.0
+root@controlplane:~# kubeadm upgrade apply v1.27.0
+root@controlplane:~# apt-get install kubelet=1.27.0-00
+root@controlplane:~# systemctl daemon-reload
+root@controlplane:~# systemctl restart kubelet
+root@controlplane:~# kubectl uncordon controlplane
+```
+**Identify the taint first.**
+```
+root@controlplane:~# kubectl describe node controlplane | grep -i taint
+```
+
+**Remove the taint with help of "kubectl taint" command.**
+```
+root@controlplane:~# kubectl taint node controlplane node-role.kubernetes.io/control-plane:NoSchedule-
+```
+
+**Verify it, the taint has been removed successfully.**
+```
+root@controlplane:~# kubectl describe node controlplane | grep -i taint
+```
+
+**upgrade node01**
+```
+root@controlplane:~# kubectl drain node01 --ignore-daemonsets
+
+root@node01:~# apt update
+root@node01:~# apt-get install kubeadm=1.27.0-00
+root@node01:~# kubeadm upgrade node
+root@node01:~# apt-get install kubelet=1.27.0-00
+root@node01:~# systemctl daemon-reload
+root@node01:~# systemctl restart kubelet
+
+root@controlplane:~# kubectl uncordon node01
+root@controlplane:~# kubectl get pods -o wide | grep gold (make sure this is scheduled on a node)
+```

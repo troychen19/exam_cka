@@ -62,10 +62,10 @@ kubectl config use-context hk8s
 ```
 Task  
 在現有的 namespace my-app 中創建一個名為 allow-port-from-namespace 的新的 NetworkPolicy
-確保新的 NetworkPolicy 允許 namespace my-app 中的 Pods 來連接到 namesapce big-corp 的端口 8080
+確保新的 NetworkPolicy 允許 namespace big-corp 中的 Pods 來連接到 namesapce my-app的端口 8080
 進一步確保新的 NetworkPolicy:
 **不允許**對没有在監聴端口 8008 的 pod 訪問
-**不允計**不來自 namespace my-app 中的 Pods 訪問
+**不允計**非來自 namespace big-corp 中的 Pods 訪問
 
 ## ANS：
 解題技巧： yaml 位置 Concepts -> Services, Load Balancing, and Networking -> Network Policies
@@ -103,7 +103,7 @@ kubectl get networkpolicy -n my-app
 ```bash
 kubectl config use-context k8s
 ```
-請重新配置現在的部屬 front-end 以及添加名為 http 的端口規範來公開現有容器 nginx 的 端口 80/tcp
+請重新配置現有的 deployment front-end 以及添加名為 http 的端口規範來公開現有容器 nginx 的 端口 80/tcp
 創建一個名為 front-end-svc 的新服務，以公開容器端口 http
 配置此服務，以通過排定的節點上的 NodePort 來公開整個 Pods
 
@@ -383,6 +383,42 @@ kubectl get pod big-core-app -o yaml > big-core-app.yaml
 kubectl delete big-core-app
 ## edit big-core-app.yaml
 kubectl apply -f big-core-app.yaml
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: big-corp-app
+spec:
+  containers:
+  - name: big-corp-app
+    image: busybox:1.28
+    args:
+    - /bin/sh
+    - -c
+    - >
+      i=0;
+      while true;
+      do
+        echo "$i: $(date)" >> /var/log/1.log;
+        echo "$(date) INFO $i" >> /var/log/2.log;
+        i=$((i+1));  tt            etz ezzzzzzzzdfxc 
+      done
+## add this
+    volumeMounts:
+    - name: varlog
+      mountPath: /var/log
+  - name: sidecar
+    image: busybox
+    args: [/bin/sh, -c, 'tail -n+1 -f /var/log/big-corp-app.log']
+    volumeMounts:
+    - name: varlog
+      mountPath: /var/log
+  volumes:
+  - name: varlog
+    emptyDir: {}
+## end
+```
 
 ---
 
