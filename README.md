@@ -8,6 +8,11 @@
 ```shell
 sudo kubeadm init --control-plane-endpoint="master"
 ```
+使用 flannel 在初始化的時候要指定 pod-network-cidr  
+```bash
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+```
+
 
 查看 container 的指令
 ```shell
@@ -34,7 +39,7 @@ curl https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel
 ```
 * apply
 ```
-kubectl apply -f ./Flannel.yaml
+kubectl apply -f ./kube-flannel.yaml
 ```
 
 友善工具
