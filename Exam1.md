@@ -28,11 +28,10 @@ kubectl create clusterrole deployment-clusterrole --verb=create --resource=deplo
 
 kubectl create serviceaccount cicd-token -n app-team1
 
-kubectl create rolebinding cicd-token --serviceaccount-app-team1:cicd-token --clusterrole=deployment-clusterrole -n app-team1
+kubectl create rolebinding cicd-token --serviceaccount-app-team1:cicd-token --clusterrole=deployment-clusterrole
 
 #verify:
-kubectl describe rolebinding cicd-token-rolebinding -n app-team1
-
+kubectl describe rolebinding cicd-token-rolebinding 
 ```
 
 ---
@@ -46,7 +45,7 @@ Task
 通過 pod label name=cpu-utilizer，找到運行時佔用大量 CPU 的 pod，並將佔用 CPU 最高的 pod 寫入文件
 /out/KUTR00401/KUTR00401.txt
 
-
+kube
 ## ANS:
 ```bash
 kubectl config use-context k8s
@@ -400,17 +399,18 @@ spec:
       i=0;
       while true;
       do
-        echo "$i: $(date)" >> /var/log/1.log;
-        echo "$(date) INFO $i" >> /var/log/2.log;
-        i=$((i+1));  tt            etz ezzzzzzzzdfxc 
+        echo "$i: $(date)" >> /var/log/11-factor-app.log;
+        i=$((i+1));
+        sleep 1;
       done
 ## add this
     volumeMounts:
     - name: varlog
       mountPath: /var/log
+
   - name: sidecar
     image: busybox
-    args: [/bin/sh, -c, 'tail -n+1 -f /var/log/big-corp-app.log']
+    args: [/bin/sh, -c, 'tail -n+1 -f /var/log/legacy-app.log']
     volumeMounts:
     - name: varlog
       mountPath: /var/log
@@ -521,7 +521,7 @@ Task
 ## ANS:
 
 ```bash
-kubelet cordan node ek8s-node-1
+kubelet cordon node ek8s-node-1
 kubelet drain --ignort-daemonsets node ek8s-node-1
 
 ```
