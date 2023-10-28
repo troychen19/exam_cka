@@ -523,5 +523,4 @@ Task
 ```bash
 kubelet cordon node ek8s-node-1
 kubelet drain --ignort-daemonsets node ek8s-node-1
-
 ```
