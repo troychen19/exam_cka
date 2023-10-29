@@ -280,7 +280,7 @@ spec:
 
 # 10. 創建 PV (yaml 位置)
 環境
-```bash
+```
 kubectl config use-context hk8s
 ```
 
@@ -310,8 +310,8 @@ spec:
 ---
 
 11. 創建 PVC (注意 yaml 位置)
-```
-設置環境：  
+設置環境： 
+``` 
 kubectl config use-context ok8s
 ```
 
@@ -331,7 +331,7 @@ Iamge: nginx
 
 ## ANS
 
-/concepts/storage/persistent volumes
+參考文件： /concepts/storage/persistent volumes
 1. Create PersistentVolumeClaim
 2. Create Pod use PerstentVolumeClaim
 3. kubectl edit pv-volume --record
@@ -350,8 +350,9 @@ Task
 
 ## ANS
 
-kubectl logs bar | grep file-not-found
+kubectl logs bar | grep ERROR
 write to file
+echo "<error message>" > /out/KUTR00/bar
 
 ---
 
@@ -454,8 +455,6 @@ apt install kubelet=1.20.1-00 kubectl=1.20.1-00
 systemctl restart kubelet
 
 kubectl get node
-
-
 ```
 
 ---
