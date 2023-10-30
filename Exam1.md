@@ -443,11 +443,11 @@ sudo -i
 ## ANS:
 Task/Administration with kubeadm/Upgrading kubeadm clusters
 ```
-kubectl drain k8s-master-0 --ignore-daemonset
+kubectl drain k8s-master-0 --ignore-daemonsets
 apt update
 apt install kubeadm=1.20.1-00 -y
 kubeadm upgrade plan
-kubeadm upgrade apply v1.20.1-00 -y --etcd-upgrade=false
+kubeadm upgrade apply v1.20.1 -y --etcd-upgrade=false
 kubectl uncordon k8s-master-0
 
 apt install kubelet=1.20.1-00 kubectl=1.20.1-00
