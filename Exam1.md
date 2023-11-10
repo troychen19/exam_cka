@@ -64,7 +64,7 @@ Task
 確保新的 NetworkPolicy 允許 namespace big-corp 中的 Pods 來連接到 namesapce my-app的端口 8080
 進一步確保新的 NetworkPolicy:
 **不允許**對没有在監聴端口 8008 的 pod 訪問
-**不允計**非來自 namespace big-corp 中的 Pods 訪問
+**不允許**非來自 namespace big-corp 中的 Pods 訪問
 
 ## ANS：
 解題技巧： yaml 位置 Concepts -> Services, Load Balancing, and Networking -> Network Policies
@@ -411,7 +411,7 @@ spec:
 
   - name: sidecar
     image: busybox
-    args: [/bin/sh, -c, 'tail -n+1 -f /var/log/legacy-app.log']
+    args: [/bin/sh, -c, 'tail -n+1 -f /var/log/11-factor-app.log']
     volumeMounts:
     - name: varlog
       mountPath: /var/log
